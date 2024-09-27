@@ -1,9 +1,9 @@
 local json = require('json')
-
+local filePath = 'resources/[WRENCH2]/WNotes/notes.json'
 -- Event to save the note and coordinates server-side
 RegisterNetEvent('WNotes_saveNoteWithCoords')
 AddEventHandler('WNotes_saveNoteWithCoords', function(note, coords)
-    local filePath = 'resources/[WRENCH2]/WNotes/notes.json'
+    
     local notesArray = {}
 
     -- Read the existing JSON file
@@ -40,7 +40,7 @@ end)
 
 
 RegisterNetEvent("WNotes_playerjoined", function ()
-    local file = io.open('resources/[WRENCH2]/WNotes/notes.json', 'r')
+    local file = io.open(filepath, 'r')
 if file then
     local notesArray
     local fileContent = file:read('*a')

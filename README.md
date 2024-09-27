@@ -1,3 +1,6 @@
+SETUP: 
+
+
 This is a script that allows you to write and leave notes for other players to see.
 It will spawn all notes as a prop with ox_target and let players view a write notes
 

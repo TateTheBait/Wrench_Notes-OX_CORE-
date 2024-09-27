@@ -14,3 +14,4 @@ notes will save in the .json file.
 Dependencies:
 OX_LIB
 OX_TARGET
+OX_CORE

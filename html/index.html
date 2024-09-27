@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="sand" />
+    <title>FiveM Note System</title>
+    <style>
+        body {
+          overflow: hidden;
+          background-color: rgba(0, 0, 0, 0); /* Fully transparent background */
+        }
+        #noteMenu, #readNoteMenu {
+          display: none;
+          position: absolute;
+          top: 20%;
+          left: 20%;
+          width: 60%;
+          height: 60%;
+          background-color: #383838;
+          color: white;
+          padding: 20px;
+          box-shadow: 0px 0px 10px 5px rgba(0,0,0,0.75);
+        }
+        textarea {
+            width: 100%;
+            height: 60%;
+            background-color: #303030;
+            color: white;
+        }
+        button {
+          width: 100%;
+          height: 20%;
+          font-size: x-large;
+          background-color: #505050;
+          color: white;
+        }
+        #noteDisplay {
+          width: 100%;
+          height: 60%;
+          background-color: #303030;
+          color: white;
+          padding: 10px;
+          overflow: auto;
+        }
+    </style>
+  </head>
+  <body>
+    <!-- Note Input Menu -->
+    <div id="noteMenu">
+      <textarea id="noteInput" placeholder="Enter your note here"></textarea>
+      <button id="submitBtn">Submit</button>
+    </div>
+
+    <!-- Read Note Menu -->
+    <div id="readNoteMenu">
+      <div id="noteDisplay"></div> <!-- Displays the note content -->
+      <button id="closeNoteBtn">Close</button>
+    </div>
+
+    <script>
+      window.addEventListener('message', function(event) {
+        const data = event.data;
+
+        // Show the note input menu
+        if (data.action === 'showMenu') {
+          document.getElementById('noteMenu').style.display = 'block';
+          document.getElementById('readNoteMenu').style.display = 'none'; // Ensure the read menu is hidden
+        } 
+        // Show the read note menu with the note content
+        else if (data.action === 'showNote') {
+          document.getElementById('readNoteMenu').style.display = 'block';
+          document.getElementById('noteMenu').style.display = 'none'; // Ensure the input menu is hidden
+          document.getElementById('noteDisplay').textContent = data.note + " - "+ data.name;
+        }
+      });
+
+      // Handle the submit button to send note to client-side Lua
+      document.getElementById('submitBtn').addEventListener('click', function() {
+        const note = document.getElementById('noteInput').value.trim();
+        
+        // Send the note to the client-side Lua script via NUI callback
+        fetch(`https://${GetParentResourceName()}/submitNote`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8'
+          },
+          body: JSON.stringify({
+            note: note
+          })
+        }).then(() => {
+          document.getElementById('noteMenu').style.display = 'none'; // Hide the input menu
+        });
+      });
+
+      // Handle closing the note reading menu
+      document.getElementById('closeNoteBtn').addEventListener('click', function() {
+        document.getElementById('readNoteMenu').style.display = 'none'; // Hide the read menu
+        fetch(`https://${GetParentResourceName()}/closeNote`, {
+          method: 'POST'
+        });
+      });
+
+      // Close any open menu when Esc is pressed
+      window.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+          document.getElementById('noteMenu').style.display = 'none';
+          document.getElementById('readNoteMenu').style.display = 'none';
+          fetch(`https://${GetParentResourceName()}/closeMenu`, {
+            method: 'POST'
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
